@@ -7,16 +7,11 @@ from jinja2 import TemplateNotFound
 import os
 from dotenv import load_dotenv
 
-# load environment variables from .env file
 load_dotenv()
 
 app = FastAPI()
-
 templates = Jinja2Templates(directory="templates")
-
 BUCKET_NAME = os.getenv("BUCKET_NAME")
-
-# AWS credentials are loaded from environment variables (or from a .env file)
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
@@ -46,7 +41,6 @@ async def home(request: Request):
 async def upload_file(request: Request, file: UploadFile = File(...)):
     s3.upload_fileobj(file.file, BUCKET_NAME, file.filename)
     upload_msg = f"{file.filename} uploaded successfully"
-
     response = s3.list_objects_v2(Bucket=BUCKET_NAME)
     files = []
     if "Contents" in response:
@@ -61,12 +55,10 @@ async def parse_file(request: Request, filename: str = Form(...)):
     selected = filename
     response = s3.get_object(Bucket=BUCKET_NAME, Key=filename)
     content = response["Body"].read().decode("utf-8")
-
     response = s3.list_objects_v2(Bucket=BUCKET_NAME)
     files = []
     if "Contents" in response:
         files = [obj["Key"] for obj in response["Contents"]]
-
     src, _, _ = templates.env.loader.get_source(templates.env, "index.html")
     rendered = templates.env.from_string(src).render(request=request, files=files, content=content, selected=selected)
     return HTMLResponse(content=rendered)
