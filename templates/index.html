@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>FastAPI S3 Demo</title>
+</head>
+<body>
+
+    <h1>Upload TXT File</h1>
+
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <button type="submit">Upload</button>
+    </form>
+
+    <hr>
+
+    <h1>Parse TXT File</h1>
+
+    <form action="/parse" method="post">
+
+        <label for="filename">
+            Choose a file:
+        </label>
+
+        <select name="filename" id="filename">
+
+            {% for file in files %}
+                <option value="{{ file }}">
+                    {{ file }}
+                </option>
+            {% endfor %}
+
+        </select>
+
+        <button type="submit">
+            Parse File
+        </button>
+
+    </form>
+
+    <hr>
+
+    <h2>File Content</h2>
+
+    <h3>Selected file: {{ selected if selected else 'None' }}</h3>
+    {% if metadata %}
+        <ul>
+            <li>ETag: {{ metadata.ETag }}</li>
+            <li>Size: {{ metadata.ContentLength }}</li>
+            <li>LastModified: {{ metadata.LastModified }}</li>
+        </ul>
+    {% endif %}
+
+    <h3>File Content</h3>
+    <pre>{{ content }}</pre>
+
+</body>
+</html>
