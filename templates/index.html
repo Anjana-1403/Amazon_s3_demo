@@ -56,4 +56,247 @@
     <pre>{{ content }}</pre>
 
 </body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>FastAPI S3 Demo</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body{
+            min-height:100vh;
+            background: linear-gradient(135deg,#0f172a,#1e293b,#334155);
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            padding:40px 20px;
+            color:white;
+        }
+
+        .container{
+            width:100%;
+            max-width:900px;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
+            border:1px solid rgba(255,255,255,0.15);
+            border-radius:20px;
+            padding:35px;
+            box-shadow:0 10px 30px rgba(0,0,0,0.35);
+        }
+
+        .title{
+            text-align:center;
+            font-size:2.5rem;
+            margin-bottom:10px;
+        }
+
+        .subtitle{
+            text-align:center;
+            color:#cbd5e1;
+            margin-bottom:35px;
+        }
+
+        .section{
+            background: rgba(255,255,255,0.06);
+            border-radius:16px;
+            padding:25px;
+            margin-bottom:25px;
+            border:1px solid rgba(255,255,255,0.1);
+        }
+
+        .section h2{
+            margin-bottom:18px;
+            color:#f8fafc;
+        }
+
+        form{
+            display:flex;
+            gap:15px;
+            flex-wrap:wrap;
+            align-items:center;
+        }
+
+        input[type="file"],
+        select{
+            flex:1;
+            min-width:220px;
+            padding:12px;
+            border:none;
+            border-radius:10px;
+            background:#e2e8f0;
+            color:#0f172a;
+            font-size:15px;
+        }
+
+        button{
+            padding:12px 22px;
+            border:none;
+            border-radius:10px;
+            background:#3b82f6;
+            color:white;
+            font-size:15px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s ease;
+        }
+
+        button:hover{
+            background:#2563eb;
+            transform:translateY(-2px);
+        }
+
+        .metadata{
+            margin-top:15px;
+            padding:15px;
+            border-radius:12px;
+            background: rgba(255,255,255,0.07);
+        }
+
+        .metadata ul{
+            list-style:none;
+        }
+
+        .metadata li{
+            margin-bottom:8px;
+            color:#e2e8f0;
+        }
+
+        .content-box{
+            margin-top:20px;
+            background:#020617;
+            color:#38bdf8;
+            padding:20px;
+            border-radius:14px;
+            overflow:auto;
+            max-height:350px;
+            border:1px solid rgba(255,255,255,0.1);
+        }
+
+        .selected-file{
+            margin-top:15px;
+            color:#93c5fd;
+            font-weight:bold;
+        }
+
+        hr{
+            border:none;
+            height:1px;
+            background:rgba(255,255,255,0.1);
+            margin:25px 0;
+        }
+
+        @media(max-width:600px){
+
+            .title{
+                font-size:2rem;
+            }
+
+            form{
+                flex-direction:column;
+                align-items:stretch;
+            }
+
+            button{
+                width:100%;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1 class="title">FastAPI S3 Demo</h1>
+
+        <p class="subtitle">
+            Upload and parse TXT files from Amazon S3
+        </p>
+
+        <!-- Upload Section -->
+        <div class="section">
+
+            <h2>Upload TXT File</h2>
+
+            <form action="/upload" method="post" enctype="multipart/form-data">
+
+                <input type="file" name="file">
+
+                <button type="submit">
+                    Upload File
+                </button>
+
+            </form>
+
+        </div>
+
+        <!-- Parse Section -->
+        <div class="section">
+
+            <h2>Parse TXT File</h2>
+
+            <form action="/parse" method="post">
+
+                <select name="filename" id="filename">
+
+                    {% for file in files %}
+                        <option value="{{ file }}">
+                            {{ file }}
+                        </option>
+                    {% endfor %}
+
+                </select>
+
+                <button type="submit">
+                    Parse File
+                </button>
+
+            </form>
+
+            <div class="selected-file">
+                Selected File:
+                {{ selected if selected else 'None' }}
+            </div>
+
+            {% if metadata %}
+            <div class="metadata">
+
+                <h3>File Metadata</h3>
+
+                <ul>
+                    <li><strong>ETag:</strong> {{ metadata.ETag }}</li>
+                    <li><strong>Size:</strong> {{ metadata.ContentLength }} bytes</li>
+                    <li><strong>Last Modified:</strong> {{ metadata.LastModified }}</li>
+                </ul>
+
+            </div>
+            {% endif %}
+
+        </div>
+
+        <!-- File Content -->
+        <div class="section">
+
+            <h2>File Content</h2>
+
+            <div class="content-box">
+                <pre>{{ content }}</pre>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
 </html>
